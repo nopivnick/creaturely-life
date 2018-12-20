@@ -59,7 +59,7 @@ let footer;  // to hold the prompt
 // let tutorialTitle = "How to";
 let intro = "Creaturely Life explores the winding of yarn as a tactile, tangible interface for reading electronic text. The piece takes it's name from a collection of poems by Michael Joyce, written in stream of consciousness from the perspective of a woman keeping vigil over her dying husband. In the final poem of the series, she recalls having found some small solace knitting beside his hospice bed.";
 let introTitle = "To begin, turn the crank clockwise...";
-let ireland = "In Ireland, the term 'bottom' means a clue or a ball of yarn. On Halloween, young girls would make their way to a limekiln with a ball of yarn and holding the loose end, throw it into the dark. If the string went taught as they rewound the length of yarn, they'd call out ‘who howlds my bottom of yarn?’ and expect to hear the name of the man they were to marry.";
+let ireland = "In Ireland, the term 'bottom' means a clue or a ball of yarn. On Hallow-eve, young girls would make their way to a limekiln with a ball of yarn and, holding the loose end, throw it into the dark. If the string went taught as they rewound the length of yarn, they'd call out ‘who howlds my bottom of yarn?’ and expect to hear the name of the man they were to marry.";
 let irelandTitle = "A clue, a ball of yarn..."
 let title = "Creaturely life: twenty pre-elegies by Michael Joyce";
 let titleTitle;
@@ -216,7 +216,12 @@ function stateIntro() {
   currentPoemTitle = introTitle;
   print("current poem: describe");
   substringPlaylist = [
-    [0, 390], // entire poem
+    // [0,    15], // "Creaturely Life "
+    [47,   78], // "a tactile, tangible interface "
+    [137, 176], // " a collection of poems by Michael Joyce"
+    [236, 259], // " a woman keeping vigil "
+    [358, 391]  // " knitting beside his hospice bed."
+    // [0, 390], // entire poem
   ];
 
   print(substringPlaylist);
@@ -234,7 +239,12 @@ function stateIreland() {
   currentPoemTitle = irelandTitle
   print("current poem: ireland");
   substringPlaylist = [
-    [0, 361], // entire poem
+    [0,    10], // "In Ireland"
+    [62,   75], // "On Hallow-eve"
+    [148, 194], // " holding the loose end, throw it into the dark"
+    [274, 305], // " ‘who howlds my bottom of yarn?’ "
+    // [336, 363] // " the man they were to marry."
+    // [0, 363], // entire poem
   ];
 
   print(substringPlaylist);
@@ -271,24 +281,25 @@ function state01() {
   print("current poem: 01");
   substringPlaylist = [
     [0,      35], // "It is how he lives that she watches "
-    [1555, 1593], // "pushing the hair back from your eyes "
-    [89,    127], // "it has already become a thing for them"
-    [1342, 1395], // "that fucking monkey, death, let’s call it by its name"
-    [1662, 1714], // "in raucous cheeps his dreadful yellow teeth exposed "
-    [164,   217], // "perched sometimes on the wide sill outside the window"
-    [299,   333], // "crescents across the clouded glass"
+    [1555, 1593], // " pushing the hair back from your eyes "
+    [1489, 1521], // " has our marriage come to this? "
     [53,     87], // "the dying will take care of itself"
     [1016, 1057], // "its crater swabbed with foam tipped swabs"
-    [768,   794], // "Watching him she longs for"
-    [816,   829], // "just one more"
-    [1775, 1781], // "a plum"
-    [603,   610], // "a peach"
-    [722,   749], // "a damp, sweet lusciousness"
-    [1490, 1519], // "has our marriage come to this"
-    [1950, 1970], // "I want to eat you up"
-    [940,   971], // "the simple kiss of early lovers"
+    [88,    127], // " it has already become a thing for them"
+    [1341, 1395], // " that fucking monkey, death, let’s call it by its name"
+    [1661, 1714], // " in raucous cheeps his dreadful yellow teeth exposed "
+    [171,   189], // " sometimes on the "
+    [193,   207], // " sill outside "
+    [298,   334], // " crescents across the clouded glass "
+    [767,   795], // " Watching him she longs for "
+    [815,   830], // " just one more "
+    [602,   611], // " a peach "
+    [1774, 1782], // " a plum "
+    [721,   749], // " a damp, sweet lusciousness "
+    [939,   972], // " the simple kiss of early lovers"
+    // [1950, 1970], // "I want to eat you up"
     [1262, 1298], // "for she is still more raven than owl"
-    [2159, 2204], // "filling him like a mother bird her fledgling."
+    [2158, 2204]  // " filling him like a mother bird her fledgling."
     // [0, 2204], // the entire poem
   ];
 
@@ -307,26 +318,26 @@ function state02() {
   currentPoemTitle = poem02Title
   print("current poem: 02");
   substringPlaylist = [
-    [0,      24], // "Wrens flit upon the sill"
-    [1076, 1119], // "as he sleeps the sleep of the morphine drip"
-    [1381, 1411], // "how lovely you are living just"
-    [1518, 1547], // "be free of all you have to do"
-    [1562, 1598], // "this business of sleeping and waking"
-    [228,   262], // "they come and go these tiny things"
-    [495,   545], // "great dark things you cannot see around or through"
-    [692,   732], // "With some things it is better at the end"
-    [263,   300], // "five floors up above the forlorn park"
-    [1246, 1264], // "I want to hold you"
-    [205,   217], // "dust to dust"
-    [1266, 1284], // "I want to tell you"
-    [1203, 1215], // "come with me"
-    [1286, 1301], // "Do you remember"
-    [796,   811], // "among the terns"
-    [1046, 1075], // "this question, these questions, into his ear"
-    [1303, 1331], // "Once you were my pet and now"
-    [1344, 1357], // "you are again"
-    [1480, 1509], // "disappointed not to have died"
-    [1600, 1636]  // "landing and pecking and setting off."
+    [0,      25], // "Wrens flit upon the sill "
+    [1075, 1118], // " as he sleeps the sleep of the morphine drip"
+    [691,   734], // " With some things it is better at the end"
+    [262,   300], // " five floors up above the forlorn park"
+    [1380, 1412], // " how lovely you are living just "
+    [1520, 1548], // " free of all you have to do "
+    [227,   263], // " they come and go these tiny things "
+    [494,   527], // " great dark things you cannot see "
+    [1245, 1265], // " I want to hold you "
+    [204,   218], // " dust to dust "
+    [1265, 1284], // " I want to tell you"
+    [1202, 1216], // " come with me, "
+    [795,   812], // " among the terns "
+    [1285, 1303], // " Do you remember? "
+    [1045, 1076], // " these questions, into his ear "
+    [1302, 1333], // " Once you were my pet and now, "
+    [1343, 1359], // " you are again"
+    [1561, 1598], // " this business of sleeping and waking"
+    [1479, 1511], // " disappointed not to have died, "
+    [1599, 1636]  // " landing and pecking and setting off."
     // [0, 1636], //  the entire poem
   ];
 
@@ -406,7 +417,7 @@ function poemLayout() {
   // create the first <p> to hold the title of the current poem / state
   header = createP();
   header.html(currentPoemTitle);
-  header.style('font-size', '26px');
+  header.style('font-size', '36px');
   header.style('font-style', 'italic');
   header.style('color: rgba(100, 100, 100, 1)');
   // header.style('margin', '150px');
@@ -513,7 +524,7 @@ function poemInteract() {
   }
 
   if (autoPlay == true) {
-    if (frameCount % 2 == 0) { // to slow down the auto play, increase the modulus
+    if (frameCount % 4 == 0) { // to slow down the auto play, increase the modulus
       //console.log(frameCount, "MOVE");
       substringIndex++;
     }
@@ -560,7 +571,7 @@ function keyPressed() {
 
   } else if (keyCode === DOWN_ARROW) {
     substringIndex--;
-  } else if (keyCode === RIGHT_ARROW) {
+  } else if (keyCode === 190) {
     if (autoPlay == true) {
       autoPlay = false;
     } else {
