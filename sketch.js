@@ -49,7 +49,7 @@ let footer;  // to hold the prompt
 // poem content stuff
 // let tutorial = "Turn the crank on the yarn ball winder to begin ...";
 // let tutorialTitle = "How to";
-let intro = "Creaturely Life explores the winding of yarn as a tactile, tangible interface for reading electronic text. The piece takes it's name from a collection of poems by Michael Joyce, written in stream of consciousness from the perspective of a woman keeping vigil over her dying husband. In the final poem of the series, she recalls having found some small solace knitting beside his hospice bed.";
+let intro = "Creaturely Life explores the winding of yarn as a tactile, tangible interface for reading electronic text. The piece takes its name from a collection of poems by Michael Joyce, written in stream of consciousness from the perspective of a woman keeping vigil over her dying husband. In the final poem of the series, she recalls having found some small solace knitting beside his hospice bed.";
 let introTitle = "To begin, turn the crank clockwise...";
 let ireland = "In Ireland, the term 'bottom' means a clue or a ball of yarn. On Hallow-eve, young girls would make their way to a limekiln with a ball of yarn and, holding the loose end, throw it into the dark. If the string went taught as they rewound the length of yarn, they'd call out ‘who howlds my bottom of yarn?’ and expect to hear the name of the man they were to marry.";
 let irelandTitle = "A clue, a ball of yarn..."
