@@ -1,36 +1,36 @@
-/*
-   Noah Pivnick
-   Final Project, 2018 Fall
-   Intro to Computational Media 2233.004 (Mimi Yin)
-   Intro to Physical Computing 2301.003 (Tom Igoe)
+/**
+ * Noah Pivnick
+ * Final Project, 2018 Fall
+ * Intro to Computational Media 2233.004 (Mimi Yin)
+ * Intro to Physical Computing 2301.003 (Tom Igoe)
 
-   Acknowledgements:
-   - Michael Joyce, friend and mentor, writer and poet, for sharing with me his unpublished poems
-   - Giwon Park for help with code and urging me to use p5.dom
-   - Allison Parish for sharing with me a crucial example of creating arrays of spans by character
-   - Brent Baily for helping me sort out logic that correctly iterated through the substring playlist
-   - Ashley Lewis for walking me through state machines
-   - Mimi Yin, Tom Igoe, and Mithru Vigneshwara for their instruction, critique, and patience
+ * Acknowledgements:
+ * - Michael Joyce, friend and mentor, writer and poet, for sharing with me his unpublished poems
+ * - Giwon Park for help with code and urging me to use p5.dom
+ * - Allison Parish for sharing with me a crucial example of creating arrays of spans by character
+ * - Brent Baily for helping me sort out logic that correctly iterated through the substring playlist
+ * - Ashley Lewis for walking me through state machines
+ * - Mimi Yin, Tom Igoe, and Mithru Vigneshwara for their instruction, critique, and patience
 
-   Instructions to run this sketch on a localhost using two browser windows, one of which is fullcreen on an external monitor:
-   - If running Arduino IDE, make sure serial monitor is closed
-   - Run P5.serialcontrol.app
-   - Select serial port w/ Arduino from dropdown menu
-   - Open serial port
-   - Enable serial port
-   - Check P5.serialcontrol.app for the IP address assigned to the laptop
-   - Confirm `serial = new p5.SerialPort("<arduino-serial-port-IP>")` in function setup() is set correctly
-   - Save sketch in P5 web editor
-   - P5 web editor » File menu » Download sketch files to Desktop
-   - Change directory name to something appropriate
-   - Connect external monitor
-   - System Preferences » Displays » Arrangement » turn mirroring *off*
-   - Open Terminal
-   - $ cd ./<directory name>
-   - $ python -m SimpleHTTPServer
-   - Open two Chrome windows and enter http://<arduino-serial-port-IP>:8000 in each
-   - Push one Chrome window to external display and make fullscreen (Cmd+Shift+F )
-*/
+ * Instructions to run this sketch on a localhost using two browser windows, one of which is fullcreen on an external monitor:
+ * - If running Arduino IDE, make sure serial monitor is closed
+ * - Run P5.serialcontrol.app
+ * - Select serial port w/ Arduino from dropdown menu
+ * - Open serial port
+ * - Enable serial port
+ * - Check P5.serialcontrol.app for the IP address assigned to the laptop
+ * - Confirm `serial = new p5.SerialPort("<arduino-serial-port-IP>")` in function setup() is set correctly
+ * - Save sketch in P5 web editor
+ * - P5 web editor » File menu » Download sketch files to Desktop
+ * - Change directory name to something appropriate
+ * - Connect external monitor
+ * - System Preferences » Displays » Arrangement » turn mirroring *off*
+ * - Open Terminal
+ * - $ cd ./<directory name>
+ * - $ python -m SimpleHTTPServer
+ * - Open two Chrome windows and enter http://<arduino-serial-port-IP>:8000 in each
+ * - Push one Chrome window to external display and make fullscreen (Cmd+Shift+F )
+ */
 
 // p5.serialcontrol stuff
 let serial; // declare a global variable for serial class
@@ -44,7 +44,7 @@ let countCrankDelayStart; // variable to set how many crank rotations over seria
 // p5.dom stuff
 let header; // to hold the name / number of the poem / state
 let paragraph; // to hold the body of the poem
-let footer;  // to hold the prompt
+let footer; // to hold the prompt
 
 // poem content stuff
 // let tutorial = "Turn the crank on the yarn ball winder to begin ...";
@@ -71,47 +71,47 @@ let currentPoemTitle;
 let currentPoemNext;
 
 // playlist stuff
-let substringPlaylist = [];   // an array to store the current poem's playlist of poem fragments
-let playlistIndex = [];       // an array to store the current poem's playlist indexes
-let substringIndex = [];      // an array to store the current poem's current substring's indexes
-let substringInOut = [];      // an array to store the current poem's current substring's start and stop indexes
+let substringPlaylist = []; // an array to store the current poem's playlist of poem fragments
+let playlistIndex = []; // an array to store the current poem's playlist indexes
+let substringIndex = []; // an array to store the current poem's current substring's indexes
+let substringInOut = []; // an array to store the current poem's current substring's start and stop indexes
 
 // poem reveal stuff
 let alphaValue = 0;
-let reveal = false;
+let isRevealed = false;
 
 // keyboard control stuff
-let autoPlay = false;
+let isAutoPlay = false;
 
 
-/***************************
+/**
  * P5 sketch setup function
- ***************************/
+ */
 
 function setup() {
   noCanvas();
 
   // p5.serialcontrol stuff
-  serial = new p5.SerialPort("10.17.246.184");  // instantiate a new serial object
-  serial.on('list', printList);                 // list the available serial ports
-  serial.on('connected', serverConnected);      // callback for connecting to the server
-  serial.on('open', portOpen);                  // callback for the port opening
-  serial.on('data', serialEvent);               // callback for when new data arrives
-  serial.on('error', serialError);              // callback for errors
-  serial.on('close', portClose);                // callback for the port closing
+  serial = new p5.SerialPort("10.17.246.184"); // instantiate a new serial object
+  serial.on('list', printList); // list the available serial ports
+  serial.on('connected', serverConnected); // callback for connecting to the server
+  serial.on('open', portOpen); // callback for the port opening
+  serial.on('data', serialEvent); // callback for when new data arrives
+  serial.on('error', serialError); // callback for errors
+  serial.on('close', portClose); // callback for the port closing
   serial.open(portName);
 
   // p5.dom stuff
-  stateIntro();                                 // the first state that begins the interaction
+  stateIntro(); // the first state that begins the interaction
 }
 
 
-/**********************
+/**
  * P5 sketch draw loop
- **********************/
+ */
 
 function draw() {
-  poemInteract();
+  displayPoem();
   // print("function: draw()")
 }
 
@@ -124,42 +124,42 @@ function draw() {
 // }
 
 
-/**************************************
- * serial data coming from the Arduino
- **************************************/
+/**
+ * Serial data coming from the Arduino
+ */
 
 function serialEvent() {
   // the Arduino should be sending ASCII over serial
-  let serialStringIn = serial.readLine(); // declare a variable to store incoming serial data as a string
+  let serialIn = serial.readLine(); // declare a variable to store incoming serial data as a string
 
   // listen for a new rotary button press
-  if (serialStringIn == "rotary button: pressed") {
+  if (serialIn == "rotary button: pressed") {
     print("rotary button: pressed");
     stateIntro();
 
     // listen for a new rotary dial position
-  } else if (serialStringIn == "rotary position: 1") {
+  } else if (serialIn == "rotary position: 1") {
     stateIntro();
     print("rotary position: 1");
-  } else if (serialStringIn == "rotary position: 2") {
+  } else if (serialIn == "rotary position: 2") {
     stateIreland();
     print("rotary position: 2");
-  } else if (serialStringIn == "rotary position: 3") {
+  } else if (serialIn == "rotary position: 3") {
     state01();
     print("rotary position: 3");
-  } else if (serialStringIn == "rotary position: 4") {
+  } else if (serialIn == "rotary position: 4") {
     state02();
     print("rotary position: 4");
 
     // TODO: listen for rotary positions 5 - 19
 
-  } else if (serialStringIn == "rotary position: 5") {
+  } else if (serialIn == "rotary position: 5") {
     state20();
     print("rotary position: 5");
 
     // listen for a new hall effect sensor tick
-  } else if (serialStringIn.length > 0 && serialStringIn.length < 5) {  // if the incoming serial string is between 1 - 4 characters
-    serialCrankCurrent = Number(serialStringIn);                        // translate incoming serial string to a number
+  } else if (serialIn.length > 0 && serialIn.length < 5) { // if the incoming serial string is between 1 - 4 characters
+    serialCrankCurrent = Number(serialIn); // translate incoming serial string to a number
 
     if (serialCrankCurrent > serialCrankPrior) {
       serialCrankPrior = serialCrankCurrent;
@@ -178,19 +178,19 @@ function substringIndexIncrease() {
   //print("substringIndex *in*creased")
 }
 
-function substringIndexDecrease() {   // just a placeholder for the time being
+function substringIndexDecrease() { // just a placeholder for the time being
   // print("substringIndex *de*creased")
 }
 
 
-/*********************************
- * there's a state for every poem
- *********************************/
+/**
+ * A state for every poem
+ */
 
 // function stateTutorial() {
-//   autoPlay = false;
+//   isAutoPlay = false;
 //   alphaValue = 0;
-//   reveal = false;
+//   isRevealed = false;
 //   removeElements();
 //   currentPoemTitle = tutorialTitle;
 //   currentPoem = tutorial;
@@ -200,45 +200,45 @@ function substringIndexDecrease() {   // just a placeholder for the time being
 //   ];
 
 //   print(substringPlaylist);
-//   poemSetup();
-//   poemLayout();
-//   poemInteract();
+//   setupPoem();
+//   setupLayout();
+//   displayPoem();
 // }
 
 function stateIntro() {
-  autoPlay = false;
+  isAutoPlay = false;
   alphaValue = 0;
-  reveal = false;
+  isRevealed = false;
   removeElements();
   currentPoem = intro;
   currentPoemTitle = introTitle;
   print("current poem: describe");
   substringPlaylist = [
     // [0,    15], // "Creaturely Life "
-    [47,   78], // "a tactile, tangible interface "
+    [47, 78], // "a tactile, tangible interface "
     [137, 176], // " a collection of poems by Michael Joyce"
     [236, 259], // " a woman keeping vigil "
-    [358, 391]  // " knitting beside his hospice bed."
+    [358, 391] // " knitting beside his hospice bed."
     // [0, 390], // entire poem
   ];
 
   print(substringPlaylist);
-  poemSetup();
-  poemLayout();
-  poemInteract();
+  setupPoem();
+  setupLayout();
+  displayPoem();
 }
 
 function stateIreland() {
-  autoPlay = false;
+  isAutoPlay = false;
   alphaValue = 0;
-  reveal = false;
+  isRevealed = false;
   removeElements();
   currentPoem = ireland;
   currentPoemTitle = irelandTitle
   print("current poem: ireland");
   substringPlaylist = [
-    [0,    10], // "In Ireland"
-    [62,   75], // "On Hallow-eve"
+    [0, 10], // "In Ireland"
+    [62, 75], // "On Hallow-eve"
     [148, 194], // " holding the loose end, throw it into the dark"
     [274, 305], // " ‘who howlds my bottom of yarn?’ "
     // [336, 363] // " the man they were to marry."
@@ -246,15 +246,15 @@ function stateIreland() {
   ];
 
   print(substringPlaylist);
-  poemSetup();
-  poemLayout();
-  poemInteract();
+  setupPoem();
+  setupLayout();
+  displayPoem();
 }
 
 function stateTitle() {
-  autoPlay = false;
+  isAutoPlay = false;
   alphaValue = 0;
-  reveal = false;
+  isRevealed = false;
   removeElements();
   currentPoem = title;
   currentPoemTitle = titleTitle;
@@ -264,101 +264,101 @@ function stateTitle() {
   ];
 
   print(substringPlaylist);
-  poemSetup();
-  poemLayout();
-  poemInteract();
+  setupPoem();
+  setupLayout();
+  displayPoem();
 }
 
 function state01() {
-  autoPlay = false;
+  isAutoPlay = false;
   alphaValue = 0;
-  reveal = false;
+  isRevealed = false;
   removeElements();
   currentPoem = poem01;
   currentPoemTitle = poem01Title
   print("current poem: 01");
   substringPlaylist = [
-    [0,      35], // "It is how he lives that she watches "
+    [0, 35], // "It is how he lives that she watches "
     [1555, 1593], // " pushing the hair back from your eyes "
     [1489, 1521], // " has our marriage come to this? "
-    [53,     87], // "the dying will take care of itself"
+    [53, 87], // "the dying will take care of itself"
     [1016, 1057], // "its crater swabbed with foam tipped swabs"
-    [88,    127], // " it has already become a thing for them"
+    [88, 127], // " it has already become a thing for them"
     [1341, 1395], // " that fucking monkey, death, let’s call it by its name"
     [1661, 1714], // " in raucous cheeps his dreadful yellow teeth exposed "
-    [171,   189], // " sometimes on the "
-    [193,   207], // " sill outside "
-    [298,   334], // " crescents across the clouded glass "
-    [767,   795], // " Watching him she longs for "
-    [815,   830], // " just one more "
-    [602,   611], // " a peach "
+    [171, 189], // " sometimes on the "
+    [193, 207], // " sill outside "
+    [298, 334], // " crescents across the clouded glass "
+    [767, 795], // " Watching him she longs for "
+    [815, 830], // " just one more "
+    [602, 611], // " a peach "
     [1774, 1782], // " a plum "
-    [721,   749], // " a damp, sweet lusciousness "
-    [939,   972], // " the simple kiss of early lovers"
+    [721, 749], // " a damp, sweet lusciousness "
+    [939, 972], // " the simple kiss of early lovers"
     // [1950, 1970], // "I want to eat you up"
     [1262, 1298], // "for she is still more raven than owl"
-    [2158, 2204]  // " filling him like a mother bird her fledgling."
+    [2158, 2204] // " filling him like a mother bird her fledgling."
     // [0, 2204], // the entire poem
   ];
 
   print(substringPlaylist);
-  poemSetup();
-  poemLayout();
-  poemInteract();
+  setupPoem();
+  setupLayout();
+  displayPoem();
 }
 
 function state02() {
-  autoPlay = false;
+  isAutoPlay = false;
   alphaValue = 0;
-  reveal = false;
+  isRevealed = false;
   removeElements();
   currentPoem = poem02;
   currentPoemTitle = poem02Title
   print("current poem: 02");
   substringPlaylist = [
-    [0,      25], // "Wrens flit upon the sill "
+    [0, 25], // "Wrens flit upon the sill "
     [1075, 1118], // " as he sleeps the sleep of the morphine drip"
-    [691,   734], // " With some things it is better at the end"
-    [262,   300], // " five floors up above the forlorn park"
+    [691, 734], // " With some things it is better at the end"
+    [262, 300], // " five floors up above the forlorn park"
     [1380, 1412], // " how lovely you are living just "
     [1520, 1548], // " free of all you have to do "
-    [227,   263], // " they come and go these tiny things "
-    [494,   527], // " great dark things you cannot see "
+    [227, 263], // " they come and go these tiny things "
+    [494, 527], // " great dark things you cannot see "
     [1245, 1265], // " I want to hold you "
-    [204,   218], // " dust to dust "
+    [204, 218], // " dust to dust "
     [1265, 1284], // " I want to tell you"
     [1202, 1216], // " come with me, "
-    [795,   812], // " among the terns "
+    [795, 812], // " among the terns "
     [1285, 1303], // " Do you remember? "
     [1045, 1076], // " these questions, into his ear "
     [1302, 1333], // " Once you were my pet and now, "
     [1343, 1359], // " you are again"
     [1561, 1598], // " this business of sleeping and waking"
     [1479, 1511], // " disappointed not to have died, "
-    [1599, 1636]  // " landing and pecking and setting off."
+    [1599, 1636] // " landing and pecking and setting off."
     // [0, 1636], //  the entire poem
   ];
 
   print(substringPlaylist);
-  poemSetup();
-  poemLayout();
-  poemInteract();
+  setupPoem();
+  setupLayout();
+  displayPoem();
 }
 
 // TODO: add states 03 thru 19
 
 function state20() {
-  autoPlay = false;
+  isAutoPlay = false;
   alphaValue = 0;
-  reveal = false;
+  isRevealed = false;
   removeElements();
   currentPoem = poem20;
   currentPoemTitle = poem20Title
   print("current poem: 20");
   substringPlaylist = [
-    [0,    27], // "But you see it does not end"
+    [0, 27], // "But you see it does not end"
     [703, 729], // "K on RS, P on WS, P5, turn"
-    [51,   84], // "the story has been lived and told
+    [51, 84], // "the story has been lived and told
     [731, 756], // "sl 1, K1, psso, K1, K2tog"
     [534, 567], // "perhaps he goes on breathing Bach"
     [703, 729], // "K on RS, P on WS, P5, turn"
@@ -383,24 +383,36 @@ function state20() {
     [703, 729], // "K on RS, P on WS, P5, turn"
     [731, 756], // "sl 1, K1, psso, K1, K2tog"
     [774, 789], // "as if the world"
-    [856, 863]  // "a song."
+    [856, 863] // "a song."
     // [0,   863], // the entire poem
     // [86,  124], // "do you want to know what has happened"
     // [171, 184], // "Of course not"
     // [568, 598], // "while she knits beside the bed"
   ];
-  poemSetup();
-  poemLayout();
-  poemInteract();
+  setupPoem();
+  setupLayout();
+  displayPoem();
 }
 
 
-/****************************************************
- * every state / poem uses the same layout in p5.dom
- ****************************************************/
+/**
+ * Every poem needs an array for its playlist and its in & out cues
+ */
 
-function poemLayout() {
-  print("function: poemLayout()")
+function setupPoem() {
+  print("function: setupPoem()")
+  playlistIndex = 0; // begin with the first substring in the playlist
+  substringIndex = 0; // begin with the first character in the substring
+  substringInOut = substringPlaylist[playlistIndex];
+}
+
+
+/**
+ * Every poem uses the same layout in p5.dom
+ */
+
+function setupLayout() {
+  print("function: setupLayout()")
 
   // create the first <p> to hold the title of the current poem / state
   header = createP();
@@ -436,7 +448,7 @@ function poemLayout() {
 
   // create an array filled with each character of the current poem wrapped in <span> tags
   for (let i = 0; i < currentPoem.length; i++) {
-    let character = currentPoem.charAt(i);             // variable for use with if statement to convert '\n' to '<br>'
+    let character = currentPoem.charAt(i); // variable for use with if statement to convert '\n' to '<br>'
     let span = createSpan(currentPoem.charAt(i));
     // if (character == "\n") {
     //   character = '<br>'
@@ -448,23 +460,11 @@ function poemLayout() {
 }
 
 
-/***************************************************************************
- * every state / poem needs an array for its playlist and its in & out cues
- ***************************************************************************/
+/**
+ * This is the guts of the interaction, called from each state
+ */
 
-function poemSetup() {
-  print("function: poemSetup()")
-  playlistIndex = 0;                                  // begin with the first substring in the playlist
-  substringIndex = 0;                                 // begin with the first character in the substring
-  substringInOut = substringPlaylist[playlistIndex];
-}
-
-
-/**************************************************************
- * this is the guts of the interaction, called from each state
- **************************************************************/
-
-function poemInteract() {
+function displayPoem() {
   let children = selectAll('span', paragraph);
   if (substringIndex === 0) {
     substringIndex = substringInOut[0];
@@ -502,7 +502,7 @@ function poemInteract() {
       //           children[i].style('color: rgba(0, 0, 0, ' + alphaValue + ')');
       //         }
 
-      reveal = true;
+      isRevealed = true;
     }
   }
   //
@@ -511,14 +511,14 @@ function poemInteract() {
     children[substringIndex].style('color: black');
   }
 
-  if (autoPlay == true) {
+  if (isAutoPlay == true) {
     if (frameCount % 4 == 0) { // to slow down the auto play, increase the modulus
       // print(frameCount, "MOVE");
       substringIndex++;
     }
   }
 
-  if (reveal == true) {
+  if (isRevealed == true) {
     if (frameCount % 8 == 0) { // to slow down the reveal, increase the modulus
       if (alphaValue < 1) {
         alphaValue += 0.01;
@@ -529,7 +529,7 @@ function poemInteract() {
       } else {
         /*
         //use below to reset the reveal animation
-        // reveal = false;
+        // isRevealed = false;
         // alphaValue = 0;
 
         // use below to reset the entire interaction (inverted for some reason)
@@ -547,9 +547,9 @@ function poemInteract() {
 }
 
 
-/************************************************************************************
- * keyboard settings for interacting w/ the sketch w/o serial input from the Arduino
- ************************************************************************************/
+/**
+ * Hotkey settings for interacting w/ the sketch w/o serial input from the Arduino
+ */
 
 function keyPressed() {
   if (keyCode === UP_ARROW) {
@@ -560,10 +560,10 @@ function keyPressed() {
   } else if (keyCode === DOWN_ARROW) {
     substringIndex--;
   } else if (keyCode === 190) {
-    if (autoPlay == true) {
-      autoPlay = false;
+    if (isAutoPlay == true) {
+      isAutoPlay = false;
     } else {
-      autoPlay = true;
+      isAutoPlay = true;
     }
   } else if (keyCode === 65) {
     print("key pressed: a");
@@ -583,12 +583,12 @@ function keyPressed() {
   } else if (keyCode === 50) {
     print("key pressed: 2");
     state02();
-  // } else if (keyCode === 51) {
-  //   print("key pressed: 3");
-  //   state03();
-  // } else if (keyCode === 52) {
-  //   print("key pressed: 4");
-  //   state04();
+    // } else if (keyCode === 51) {
+    //   print("key pressed: 3");
+    //   state03();
+    // } else if (keyCode === 52) {
+    //   print("key pressed: 4");
+    //   state04();
 
     // TODO: add states 05 thru 19
 
@@ -606,9 +606,9 @@ function keyPressed() {
 }
 
 
-/*********************************************
- * functions to help with strings and indexes
- *********************************************/
+/**
+ * Functions to help with strings and indexes
+ */
 
 //generate a text file that references each character in the poem to its index value
 function createPoemCharRef() {
@@ -641,9 +641,9 @@ function calcTotalPlaylistChars() {
 // }
 
 
-/********************************************************************
- * The functions below are used in conjunction with p5.serialcontrol
- ********************************************************************/
+/**
+ * Functions used in conjunction with p5.serialcontrol
+ */
 
 // get a list of serial port names and put them in an array called portList
 function printList(portList) {
