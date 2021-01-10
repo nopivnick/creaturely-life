@@ -35,11 +35,9 @@
 // p5.serialcontrol stuff
 let serial; // declare a global variable for serial class
 let portName = '/dev/cu.usbmodem1411';
-let serialCrankCurrent;
-let serialCrankPrior = 0;
-let rotaryEncoder;
-let rotaryButton = false;
-let countCrankDelayStart; // variable to set how many crank rotations over serial before starting text effect
+let currentCount;
+let previousCount = 0;
+let waitCount; // variable to set how many crank rotations over serial before starting text effect
 
 // p5.dom stuff
 let header; // to hold the name / number of the poem / state
@@ -66,12 +64,11 @@ let poem20 = "But you see it does not end, the living, even when the story has b
 let poem20Title = "(20)";
 let poemNext = "To continue, turn the poem selector one click to the right..."
 
-let currentPoem;
-let currentPoemTitle;
-let currentPoemNext;
+let poem;
+let poemTitle;
 
 // playlist stuff
-let substringPlaylist = []; // an array to store the current poem's playlist of poem fragments
+let poemPlaylist = []; // an array to store the current poem's playlist of poem fragments
 let playlistIndex = []; // an array to store the current poem's playlist indexes
 let substringIndex = []; // an array to store the current poem's current substring's indexes
 let substringInOut = []; // an array to store the current poem's current substring's start and stop indexes
@@ -116,7 +113,7 @@ function draw() {
 }
 
 // // TODO: reset the current poem using the keyboard
-// function resetCurrentPoem() {
+// function resetPoem() {
 // }
 
 // // TODO: reset the entire piece using the keyboard
@@ -159,18 +156,18 @@ function serialEvent() {
 
     // listen for a new hall effect sensor tick
   } else if (serialIn.length > 0 && serialIn.length < 5) { // if the incoming serial string is between 1 - 4 characters
-    serialCrankCurrent = Number(serialIn); // translate incoming serial string to a number
+    currentCount = Number(serialIn); // translate incoming serial string to a number
 
-    if (serialCrankCurrent > serialCrankPrior) {
-      serialCrankPrior = serialCrankCurrent;
+    if (currentCount > previousCount) {
+      previousCount = currentCount;
       substringIndexIncrease();
-    } else if (serialCrankCurrent < serialCrankPrior) {
-      serialCrankPrior = serialCrankCurrent;
+    } else if (currentCount < previousCount) {
+      previousCount = currentCount;
       substringIndexDecrease();
     }
     // print("tick");
   }
-  // print(serialCrankCurrent);
+  // print(currentCount);
 }
 
 function substringIndexIncrease() {
@@ -191,7 +188,7 @@ function setupPoem() {
   print("function: setupPoem()")
   playlistIndex = 0; // begin with the first substring in the playlist
   substringIndex = 0; // begin with the first character in the substring
-  substringInOut = substringPlaylist[playlistIndex];
+  substringInOut = poemPlaylist[playlistIndex];
 }
 
 
@@ -204,7 +201,7 @@ function setupLayout() {
 
   // create the first <p> to hold the title of the current poem / state
   header = createP();
-  header.html(currentPoemTitle);
+  header.html(poemTitle);
   header.style('font-size', '36px');
   header.style('font-style', 'italic');
   header.style('color: rgba(100, 100, 100, 1)');
@@ -235,9 +232,9 @@ function setupLayout() {
   footer.style('color: rgba(0, 0, 0, 0)');
 
   // create an array filled with each character of the current poem wrapped in <span> tags
-  for (let i = 0; i < currentPoem.length; i++) {
-    let character = currentPoem.charAt(i); // variable for use with if statement to convert '\n' to '<br>'
-    let span = createSpan(currentPoem.charAt(i));
+  for (let i = 0; i < poem.length; i++) {
+    let character = poem.charAt(i); // variable for use with if statement to convert '\n' to '<br>'
+    let span = createSpan(poem.charAt(i));
     // if (character == "\n") {
     //   character = '<br>'
     // }
@@ -259,7 +256,7 @@ function displayPoem() {
   }
   // if the current substring reaches it's last character
   if (substringIndex === substringInOut[1]) {
-    if (playlistIndex < substringPlaylist.length - 1) {
+    if (playlistIndex < poemPlaylist.length - 1) {
       // increment the index value for the ins & outs array
       playlistIndex++;
       for (let i = 0; i < children.length; i++) {
@@ -267,7 +264,7 @@ function displayPoem() {
         children[i].style('color: rgba(0, 0, 0, 0)');
       }
       // move to next substring in array of substrings
-      substringInOut = substringPlaylist[playlistIndex];
+      substringInOut = poemPlaylist[playlistIndex];
       console.log('playlist index: ', playlistIndex);
       console.log('substring in & out:', substringInOut);
       // reset substringIndex to the first index of the next substring
@@ -276,7 +273,7 @@ function displayPoem() {
 
       // when you reach the end of the ins and outs array, reset
       // playlistIndex = 0;
-      // substringInOut = substringPlaylist[playlistIndex];
+      // substringInOut = poemPlaylist[playlistIndex];
 
 
       //       if(frameCount % 2 == 0 && alphaValue < 1){
@@ -385,10 +382,10 @@ function keyPressed() {
     state20();
   } else if (keyCode === 90) {
     print("key pressed: z");
-    createPoemCharRef();
+    poemCharIndex();
   } else if (keyCode === 88) {
     print("key pressed: x");
-    calcTotalPlaylistChars();
+    playlistCharIndex();
   }
   return false; // turns off any browser-specific default key
 }
@@ -399,24 +396,24 @@ function keyPressed() {
  */
 
 //generate a text file that references each character in the poem to its index value
-function createPoemCharRef() {
-  let currentPoemCharRef = [];
-  for (i = 0; i < currentPoem.length; i++) {
-    // print(currentPoem[i] + " is at index [" + i + "]");
-    currentPoemCharRef.push(currentPoem[i] + " - [" + i + "]");
+function poemCharIndex() {
+  let poemCharCount = [];
+  for (i = 0; i < poem.length; i++) {
+    // print(poem[i] + " is at index [" + i + "]");
+    poemCharCount.push(poem[i] + " - [" + i + "]");
   }
-  print("generating char-index_" + currentPoem + ".txt");
-  saveStrings(currentPoemCharRef, 'char-index_X.txt'); // print to .txt file
+  print("generating char-index_" + poem + ".txt");
+  saveStrings(poemCharCount, 'char-index_X.txt'); // print to .txt file
 }
 
 // print to console total number of characters in the current poem's playlist
-function calcTotalPlaylistChars() {
-  let playlistTotalChars = 0;
-  for (i = 0; i < substringPlaylist.length; i++) {
-    playlistTotalChars += (substringPlaylist[i][1] - substringPlaylist[i][0]);
+function playlistCharIndex() {
+  let playlistCharCount = 0;
+  for (i = 0; i < poemPlaylist.length; i++) {
+    playlistCharCount += (poemPlaylist[i][1] - poemPlaylist[i][0]);
   }
-  print("total number of characters in playlist:", playlistTotalChars);
-  print(substringPlaylist);
+  print("total number of characters in playlist:", playlistCharCount);
+  print(poemPlaylist);
 }
 
 // // TODO: calculate the In & Out indexes using search by substring
