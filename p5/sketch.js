@@ -8,7 +8,7 @@
  * - Michael Joyce, friend and mentor, writer and poet, for sharing with me his unpublished poems
  * - Giwon Park for help with code and urging me to use p5.dom
  * - Allison Parish for sharing with me a crucial example of creating arrays of spans by character
- * - Brent Baily for helping me sort out logic that correctly iterated through the substring playlist
+ * - Brent Baily for helping me sort out logic that correctly iterated through the fragment playlist
  * - Ashley Lewis for walking me through state machines
  * - Mimi Yin, Tom Igoe, and Mithru Vigneshwara for their instruction, critique, and patience
 
@@ -68,10 +68,10 @@ let poem;
 let poemTitle;
 
 // playlist stuff
-let poemPlaylist = []; // an array to store the current poem's playlist of poem fragments
+let playlist = []; // an array to store the current poem's playlist of poem fragments
 let playlistIndex = []; // an array to store the current poem's playlist indexes
-let substringIndex = []; // an array to store the current poem's current substring's indexes
-let substringInOut = []; // an array to store the current poem's current substring's start and stop indexes
+let fragmentIndex = []; // an array to store the current poem's current fragment's indexes
+let fragmentInOut = []; // an array to store the current poem's current fragment's start and stop indexes
 
 // poem reveal stuff
 let alphaValue = 0;
@@ -160,23 +160,23 @@ function serialEvent() {
 
     if (currentCount > previousCount) {
       previousCount = currentCount;
-      substringIndexIncrease();
+      fragmentIndexIncrease();
     } else if (currentCount < previousCount) {
       previousCount = currentCount;
-      substringIndexDecrease();
+      fragmentIndexDecrease();
     }
     // print("tick");
   }
   // print(currentCount);
 }
 
-function substringIndexIncrease() {
-  substringIndex++;
-  //print("substringIndex *in*creased")
+function fragmentIndexIncrease() {
+  fragmentIndex++;
+  //print("fragmentIndex *in*creased")
 }
 
-function substringIndexDecrease() { // just a placeholder for the time being
-  // print("substringIndex *de*creased")
+function fragmentIndexDecrease() { // just a placeholder for the time being
+  // print("fragmentIndex *de*creased")
 }
 
 
@@ -186,9 +186,9 @@ function substringIndexDecrease() { // just a placeholder for the time being
 
 function setupPoem() {
   print("function: setupPoem()")
-  playlistIndex = 0; // begin with the first substring in the playlist
-  substringIndex = 0; // begin with the first character in the substring
-  substringInOut = poemPlaylist[playlistIndex];
+  playlistIndex = 0; // begin with the first fragment in the playlist
+  fragmentIndex = 0; // begin with the first character in the fragment
+  fragmentInOut = playlist[playlistIndex];
 }
 
 
@@ -240,7 +240,7 @@ function setupLayout() {
     // }
     span.style('position: relative');
     span.style('color: rgba(0, 0, 0, 0)');
-    paragraph.child(span);
+    paragraph.child(span); // make each <span>char</span> a child of the paragraph
   }
 }
 
@@ -251,29 +251,29 @@ function setupLayout() {
 
 function displayPoem() {
   let children = selectAll('span', paragraph);
-  if (substringIndex === 0) {
-    substringIndex = substringInOut[0];
+  if (fragmentIndex === 0) {
+    fragmentIndex = fragmentInOut[0];
   }
-  // if the current substring reaches it's last character
-  if (substringIndex === substringInOut[1]) {
-    if (playlistIndex < poemPlaylist.length - 1) {
+  // if the current fragment reaches it's last character
+  if (fragmentIndex === fragmentInOut[1]) {
+    if (playlistIndex < playlist.length - 1) {
       // increment the index value for the ins & outs array
       playlistIndex++;
       for (let i = 0; i < children.length; i++) {
-        // color wipe the current substring
+        // color wipe the current fragment
         children[i].style('color: rgba(0, 0, 0, 0)');
       }
-      // move to next substring in array of substrings
-      substringInOut = poemPlaylist[playlistIndex];
+      // move to next fragment in array of fragments
+      fragmentInOut = playlist[playlistIndex];
       console.log('playlist index: ', playlistIndex);
-      console.log('substring in & out:', substringInOut);
-      // reset substringIndex to the first index of the next substring
-      substringIndex = substringInOut[0];
+      console.log('fragment in & out:', fragmentInOut);
+      // reset fragmentIndex to the first index of the next fragment
+      fragmentIndex = fragmentInOut[0];
     } else {
 
       // when you reach the end of the ins and outs array, reset
       // playlistIndex = 0;
-      // substringInOut = poemPlaylist[playlistIndex];
+      // fragmentInOut = playlist[playlistIndex];
 
 
       //       if(frameCount % 2 == 0 && alphaValue < 1){
@@ -291,15 +291,15 @@ function displayPoem() {
     }
   }
   //
-  if (substringIndex >= substringInOut[0] && substringIndex < substringInOut[1]) {
+  if (fragmentIndex >= fragmentInOut[0] && fragmentIndex < fragmentInOut[1]) {
     // print('here');
-    children[substringIndex].style('color: black');
+    children[fragmentIndex].style('color: black');
   }
 
   if (isAutoPlay == true) {
     if (frameCount % 4 == 0) { // to slow down the auto play, increase the modulus
       // print(frameCount, "MOVE");
-      substringIndex++;
+      fragmentIndex++;
     }
   }
 
@@ -319,7 +319,7 @@ function displayPoem() {
 
         // use below to reset the entire interaction (inverted for some reason)
         playlistIndex = 0;
-        substringIndex = 0;
+        fragmentIndex = 0;
         */
       }
       // print("alphaValue", alphaValue);
@@ -338,12 +338,12 @@ function displayPoem() {
 
 function keyPressed() {
   if (keyCode === UP_ARROW) {
-    substringIndex++;
+    fragmentIndex++;
 
     // TODO: reverse step-thru-playlist currently not working
 
   } else if (keyCode === DOWN_ARROW) {
-    substringIndex--;
+    fragmentIndex--;
   } else if (keyCode === 190) {
     if (isAutoPlay == true) {
       isAutoPlay = false;
@@ -409,20 +409,20 @@ function poemCharIndex() {
 // print to console total number of characters in the current poem's playlist
 function playlistCharIndex() {
   let playlistCharCount = 0;
-  for (i = 0; i < poemPlaylist.length; i++) {
-    playlistCharCount += (poemPlaylist[i][1] - poemPlaylist[i][0]);
+  for (i = 0; i < playlist.length; i++) {
+    playlistCharCount += (playlist[i][1] - playlist[i][0]);
   }
   print("total number of characters in playlist:", playlistCharCount);
-  print(poemPlaylist);
+  print(playlist);
 }
 
-// // TODO: calculate the In & Out indexes using search by substring
-// function findSubstringInOut() {
-//   let substring = "Visit sl 1, K1, psso, K1, K2tog, turn, and so on Rashida";
+// // TODO: calculate the In & Out indexes using search by fragment
+// function findFragmentInOut() {
+//   let fragment = "Visit sl 1, K1, psso, K1, K2tog, turn, and so on Rashida";
 //   let search_term = "sl 1, K1, psso, K1, K2tog, turn, and so on";
-//   let poemSubstringIn = substring.search(search_term);
-//   var poemSubstringInOut = substring.slice(poemSubstringIn, poemSubstringIn + search_term.length);
-//   print(substring.slice(poemSubstringIn, poemSubstringIn + search_term.length));
+//   let poemFragmentIn = fragment.search(search_term);
+//   var poemFragmentInOut = fragment.slice(poemFragmentIn, poemFragmentIn + search_term.length);
+//   print(fragment.slice(poemFragmentIn, poemFragmentIn + search_term.length));
 // }
 
 
