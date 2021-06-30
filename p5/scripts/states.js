@@ -10,11 +10,11 @@
 //   poemTitle = tutorialTitle;
 //   poem = tutorial;
 //   print("current poem: tutorial");
-//   poemPlaylist = [
+//   playlist = [
 //     [0, 51], // entire poem
 //   ];
 
-//   print(poemPlaylist);
+//   print(playlist);
 //   setupPoem();
 //   setupLayout();
 //   displayPoem();
@@ -28,7 +28,7 @@ function stateIntro() {
   poem = intro;
   poemTitle = introTitle;
   print("current poem: describe");
-  poemPlaylist = [
+  playlist = [
     // [0,    15], // "Creaturely Life "
     [47, 78], // "a tactile, tangible interface "
     [137, 176], // " a collection of poems by Michael Joyce"
@@ -37,7 +37,7 @@ function stateIntro() {
     // [0, 390], // entire poem
   ];
 
-  print(poemPlaylist);
+  print(playlist);
   setupPoem();
   setupLayout();
   displayPoem();
@@ -51,7 +51,7 @@ function stateIreland() {
   poem = ireland;
   poemTitle = irelandTitle
   print("current poem: ireland");
-  poemPlaylist = [
+  playlist = [
     [0, 10], // "In Ireland"
     [62, 75], // "On Hallow-eve"
     [148, 194], // " holding the loose end, throw it into the dark"
@@ -60,7 +60,7 @@ function stateIreland() {
     // [0, 363], // entire poem
   ];
 
-  print(poemPlaylist);
+  print(playlist);
   setupPoem();
   setupLayout();
   displayPoem();
@@ -74,11 +74,11 @@ function stateTitle() {
   poem = title;
   poemTitle = titleTitle;
   print("current poem: title");
-  poemPlaylist = [
+  playlist = [
     [0, 2204], // the entire poem
   ];
 
-  print(poemPlaylist);
+  print(playlist);
   setupPoem();
   setupLayout();
   displayPoem();
@@ -92,7 +92,7 @@ function state01() {
   poem = poem01;
   poemTitle = poem01Title
   print("current poem: 01");
-  poemPlaylist = [
+  playlist = [
     [0, 35], // "It is how he lives that she watches "
     [1555, 1593], // " pushing the hair back from your eyes "
     [1489, 1521], // " has our marriage come to this? "
@@ -116,7 +116,7 @@ function state01() {
     // [0, 2204], // the entire poem
   ];
 
-  print(poemPlaylist);
+  print(playlist);
   setupPoem();
   setupLayout();
   displayPoem();
@@ -130,7 +130,7 @@ function state02() {
   poem = poem02;
   poemTitle = poem02Title
   print("current poem: 02");
-  poemPlaylist = [
+  playlist = [
     [0, 25], // "Wrens flit upon the sill "
     [1075, 1118], // " as he sleeps the sleep of the morphine drip"
     [691, 734], // " With some things it is better at the end"
@@ -154,7 +154,7 @@ function state02() {
     // [0, 1636], //  the entire poem
   ];
 
-  print(poemPlaylist);
+  print(playlist);
   setupPoem();
   setupLayout();
   displayPoem();
@@ -170,7 +170,7 @@ function state20() {
   poem = poem20;
   poemTitle = poem20Title
   print("current poem: 20");
-  poemPlaylist = [
+  playlist = [
     [0, 27], // "But you see it does not end"
     [703, 729], // "K on RS, P on WS, P5, turn"
     [51, 84], // "the story has been lived and told
